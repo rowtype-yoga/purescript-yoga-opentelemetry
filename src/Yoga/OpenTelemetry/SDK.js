@@ -1,6 +1,7 @@
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { PinoInstrumentation } from '@opentelemetry/instrumentation-pino';
 import { Resource } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
@@ -38,6 +39,7 @@ export const initializeOpenTelemetrySDKImpl = (config) => {
     logRecordProcessor: new BatchLogRecordProcessor(logExporter),
     spanProcessor: new BatchSpanProcessor(traceExporter),
     instrumentations: [
+      new HttpInstrumentation(),
       new PinoInstrumentation({
         logHook: (span, record) => {
           if (span) {
