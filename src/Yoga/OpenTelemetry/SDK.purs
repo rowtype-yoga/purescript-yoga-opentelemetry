@@ -1,13 +1,17 @@
 module Yoga.OpenTelemetry.SDK
   ( NodeSDK
   , initializeOpenTelemetrySDK
+  , shutdownSDK
   , getTracerFromSDK
   ) where
 
-import Prelude
-
+import Data.Function ((#))
+import Data.Unit (Unit)
 import Effect (Effect)
+import Effect.Aff (Aff)
 import Effect.Uncurried (EffectFn1, runEffectFn1)
+import Promise (Promise)
+import Promise.Aff as Promise
 import Yoga.OpenTelemetry.OpenTelemetry (ServiceName(..), ServiceVersion(..), ServiceNamespace(..), Tracer, TracerName(..))
 
 -- Opaque SDK type
@@ -25,6 +29,7 @@ foreign import initializeOpenTelemetrySDKImpl
        NodeSDK
 
 foreign import getTracerImpl :: EffectFn1 String Tracer
+foreign import shutdownSDKImpl :: EffectFn1 NodeSDK (Promise Unit)
 
 -- Public API
 initializeOpenTelemetrySDK
@@ -46,3 +51,6 @@ initializeOpenTelemetrySDK { serviceName: ServiceName sn, serviceVersion: Servic
 
 getTracerFromSDK :: TracerName -> Effect Tracer
 getTracerFromSDK (TracerName name) = runEffectFn1 getTracerImpl name
+
+shutdownSDK :: NodeSDK -> Aff Unit
+shutdownSDK sdk = runEffectFn1 shutdownSDKImpl sdk # Promise.toAffE

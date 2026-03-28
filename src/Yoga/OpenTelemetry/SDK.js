@@ -78,6 +78,10 @@ export const getTracerImpl = (name) => {
   return api.trace.getTracer(name);
 };
 
+export const shutdownSDKImpl = (sdk) => {
+  return sdk.shutdown();
+};
+
 /**
  * Register the logger provider globally so we can access it via the Logs API
  * The SDK initializes it, but we need to explicitly register it globally
