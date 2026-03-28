@@ -647,12 +647,8 @@
       }
     },
     "extra_packages": {
-      "yoga-om": {
-        "path": "../purescript-yoga-om"
-      },
-      "yoga-om-layer": {
-        "path": "../purescript-yoga-om-layer"
-      },
+      "yoga-om": "2.0.0",
+      "yoga-om-layer": "2.0.0",
       "yoga-options": {
         "path": "../purescript-yoga-options"
       }
@@ -1545,8 +1541,9 @@
       ]
     },
     "yoga-om": {
-      "type": "local",
-      "path": "../purescript-yoga-om",
+      "type": "registry",
+      "version": "2.0.0",
+      "integrity": "sha256-eenoujD2rJzR6gYJbbIiqLhXHC1C5dagu91HZkAEt/Y=",
       "dependencies": [
         "aff",
         "aff-retry",
@@ -1576,8 +1573,9 @@
       ]
     },
     "yoga-om-layer": {
-      "type": "local",
-      "path": "../purescript-yoga-om-layer",
+      "type": "registry",
+      "version": "2.0.0",
+      "integrity": "sha256-0IJnp0zk8l8SEzVcQ2HLhtlxs0qse4TJwqr0iOl/0CA=",
       "dependencies": [
         "aff",
         "aff-retry",
