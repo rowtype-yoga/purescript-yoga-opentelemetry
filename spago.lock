@@ -38,7 +38,12 @@
             {
               "unsafe-coerce": ">=6.0.0 <7.0.0"
             },
-            "yoga-om-layer"
+            {
+              "yoga-om": ">=2.0.0 <3.0.0"
+            },
+            {
+              "yoga-om-layer": ">=2.0.0 <3.0.0"
+            }
           ]
         },
         "test": {

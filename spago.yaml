@@ -11,7 +11,7 @@ workspace:
 package:
   name: yoga-opentelemetry
   publish:
-    version: 0.1.1
+    version: 0.2.0
     license: MIT
     location:
       githubOwner: rowtype-yoga
@@ -28,7 +28,8 @@ package:
     - prelude: ">=6.0.2 <7.0.0"
     - typelevel-prelude: ">=7.0.0 <8.0.0"
     - unsafe-coerce: ">=6.0.0 <7.0.0"
-    - yoga-om-layer
+    - yoga-om: ">=2.0.0 <3.0.0"
+    - yoga-om-layer: ">=2.0.0 <3.0.0"
   test:
     main: Test.Opentelemetry.Main
     dependencies:
