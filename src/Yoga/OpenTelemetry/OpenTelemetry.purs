@@ -175,6 +175,11 @@ foreign import startSpanImpl :: forall opts. EffectFn3 Tracer SpanName { | opts 
 startSpan :: SpanName -> Tracer -> Effect Span
 startSpan name tracer = runEffectFn3 startSpanImpl tracer name {}
 
+foreign import startChildSpanImpl :: EffectFn3 Tracer SpanName Span Span
+
+startChildSpan :: SpanName -> Span -> Tracer -> Effect Span
+startChildSpan name parent tracer = runEffectFn3 startChildSpanImpl tracer name parent
+
 startSpanWithOptions :: forall opts opts_. Union opts opts_ StartSpanOptionsImpl => SpanName -> { | opts } -> Tracer -> Effect Span
 startSpanWithOptions name opts tracer = runEffectFn3 startSpanImpl tracer name opts
 
@@ -313,6 +318,13 @@ withSpan name tracer action = do
 withSpanAff :: forall a. SpanName -> Tracer -> Aff a -> Aff a
 withSpanAff name tracer action = do
   span <- liftEffect $ startSpan name tracer
+  result <- action
+  liftEffect $ endSpan span
+  pure result
+
+withChildSpanAff :: forall a. SpanName -> Span -> Tracer -> Aff a -> Aff a
+withChildSpanAff name parent tracer action = do
+  span <- liftEffect $ startChildSpan name parent tracer
   result <- action
   liftEffect $ endSpan span
   pure result

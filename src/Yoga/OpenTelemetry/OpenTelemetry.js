@@ -251,6 +251,12 @@ export const updateNameImpl = (span, name) => {
   span.updateName(name);
 };
 
+// Start a child span under a parent span
+export const startChildSpanImpl = (tracer, name, parentSpan) => {
+  const parentCtx = trace.setSpan(context.active(), parentSpan);
+  return tracer.startSpan(name, {}, parentCtx);
+};
+
 // End span
 export const endSpanImpl = (span) => {
   span.end();
