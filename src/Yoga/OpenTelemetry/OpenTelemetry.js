@@ -1,8 +1,8 @@
-const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
-const { Resource } = require('@opentelemetry/resources');
-const { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } = require('@opentelemetry/semantic-conventions');
-const { BatchSpanProcessor } = require('@opentelemetry/sdk-trace-base');
-const { SpanKind, SpanStatusCode, trace, context } = require('@opentelemetry/api');
+import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
+import { Resource } from '@opentelemetry/resources';
+import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
+import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { SpanKind, SpanStatusCode, trace, context } from '@opentelemetry/api';
 
 // Convert AttributeValue ADT to JS value
 const attributeValueToJS = (attrValue) => {

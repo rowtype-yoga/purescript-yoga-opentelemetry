@@ -6,6 +6,8 @@ import { Resource } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
 import { BatchLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import api from '@opentelemetry/api';
+import apiLogs from '@opentelemetry/api-logs';
 
 /**
  * Initialize OpenTelemetry SDK with logs and traces
@@ -26,13 +28,17 @@ export const initializeOpenTelemetrySDKImpl = (config) => {
     url: config.tracesEndpoint,
   });
 
+  // Prevent the NodeSDK from auto-configuring a metric reader from env vars
+  // (OTEL_METRICS_EXPORTER / OTEL_METRIC_EXPORT_INTERVAL) which can conflict.
+  const savedMetricsExporter = process.env.OTEL_METRICS_EXPORTER;
+  process.env.OTEL_METRICS_EXPORTER = 'none';
+
   const sdk = new NodeSDK({
     resource,
     logRecordProcessor: new BatchLogRecordProcessor(logExporter),
     spanProcessor: new BatchSpanProcessor(traceExporter),
     instrumentations: [
       new PinoInstrumentation({
-        // Optional: add log-trace correlation
         logHook: (span, record) => {
           if (span) {
             record['trace_id'] = span.spanContext().traceId;
@@ -45,6 +51,13 @@ export const initializeOpenTelemetrySDKImpl = (config) => {
   });
 
   sdk.start();
+
+  // Restore after start so we don't permanently clobber the env
+  if (savedMetricsExporter !== undefined) {
+    process.env.OTEL_METRICS_EXPORTER = savedMetricsExporter;
+  } else {
+    delete process.env.OTEL_METRICS_EXPORTER;
+  }
 
   // Graceful shutdown
   process.on('SIGTERM', () => {
@@ -62,7 +75,6 @@ export const initializeOpenTelemetrySDKImpl = (config) => {
  * Get tracer from the global tracer provider (after SDK is initialized)
  */
 export const getTracerImpl = (name) => {
-  const api = require('@opentelemetry/api');
   return api.trace.getTracer(name);
 };
 
@@ -71,6 +83,5 @@ export const getTracerImpl = (name) => {
  * The SDK initializes it, but we need to explicitly register it globally
  */
 export const getLoggerProviderImpl = () => {
-  const { logs } = require('@opentelemetry/api-logs');
-  return logs.getLoggerProvider();
+  return apiLogs.logs.getLoggerProvider();
 };
