@@ -34,10 +34,25 @@ export const initializeOpenTelemetrySDKImpl = (config) => {
   const savedMetricsExporter = process.env.OTEL_METRICS_EXPORTER;
   process.env.OTEL_METRICS_EXPORTER = 'none';
 
+  const spanProcessors = [new BatchSpanProcessor(traceExporter)];
+  if (process.env.OTEL_CONSOLE_TRACES === 'true') {
+    spanProcessors.push({
+      onStart(span) {},
+      onEnd(span) {
+        const { name, attributes, status, duration } = span;
+        const { traceId, spanId } = span.spanContext();
+        const parent = span.parentSpanId || span.parentSpanContext?.spanId || null;
+        console.log(JSON.stringify({ trace: name, traceId, spanId, parent, attributes, status, duration }));
+      },
+      shutdown() { return Promise.resolve(); },
+      forceFlush() { return Promise.resolve(); },
+    });
+  }
+
   const sdk = new NodeSDK({
     resource,
     logRecordProcessor: new BatchLogRecordProcessor(logExporter),
-    spanProcessor: new BatchSpanProcessor(traceExporter),
+    spanProcessors,
     instrumentations: [
       new HttpInstrumentation(),
       new PinoInstrumentation({
